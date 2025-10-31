@@ -1,5 +1,6 @@
 import { createBrowserRouter } from "react-router-dom"
 import { lazy, Suspense } from "react"
+import Root from "@/layouts/Root"
 import Layout from "@/components/organisms/Layout"
 
 // Lazy load all page components
@@ -11,6 +12,13 @@ const DealForm = lazy(() => import("@/components/pages/DealForm"))
 const Activities = lazy(() => import("@/components/pages/Activities"))
 const ActivityForm = lazy(() => import("@/components/pages/ActivityForm"))
 const NotFound = lazy(() => import("@/components/pages/NotFound"))
+const Login = lazy(() => import("@/pages/Login"))
+const Signup = lazy(() => import("@/pages/Signup"))
+const Callback = lazy(() => import("@/pages/Callback"))
+const ErrorPage = lazy(() => import("@/pages/ErrorPage"))
+const ResetPassword = lazy(() => import("@/pages/ResetPassword"))
+const PromptPassword = lazy(() => import("@/pages/PromptPassword"))
+
 const mainRoutes = [
   {
     path: "",
@@ -90,8 +98,62 @@ path: "deals/edit/:id",
 const routes = [
   {
     path: "/",
-    element: <Layout />,
-    children: [...mainRoutes],
+    element: <Root />,
+    children: [
+      {
+        path: "login",
+        element: (
+          <Suspense fallback={<div>Loading.....</div>}>
+            <Login />
+          </Suspense>
+        ),
+      },
+      {
+        path: "signup",
+        element: (
+          <Suspense fallback={<div>Loading.....</div>}>
+            <Signup />
+          </Suspense>
+        ),
+      },
+      {
+        path: "callback",
+        element: (
+          <Suspense fallback={<div>Loading.....</div>}>
+            <Callback />
+          </Suspense>
+        ),
+      },
+      {
+        path: "error",
+        element: (
+          <Suspense fallback={<div>Loading.....</div>}>
+            <ErrorPage />
+          </Suspense>
+        ),
+      },
+      {
+        path: "reset-password/:appId/:fields",
+        element: (
+          <Suspense fallback={<div>Loading.....</div>}>
+            <ResetPassword />
+          </Suspense>
+        ),
+      },
+      {
+        path: "prompt-password/:appId/:emailAddress/:provider",
+        element: (
+          <Suspense fallback={<div>Loading.....</div>}>
+            <PromptPassword />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/",
+        element: <Layout />,
+        children: [...mainRoutes],
+      },
+    ],
   },
 ]
 

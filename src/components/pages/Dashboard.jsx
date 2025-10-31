@@ -71,21 +71,35 @@ const Dashboard = () => {
     )
   }
 
-  // Calculate metrics
+// Calculate metrics
   const totalPipelineValue = deals
-    .filter(deal => !["won", "lost"].includes(deal.stage))
-    .reduce((sum, deal) => sum + deal.value, 0)
+    .filter(deal => {
+      const stage = (deal.stage_c || deal.stage || "").toString().toLowerCase()
+      return !["won", "lost"].includes(stage)
+    })
+    .reduce((sum, deal) => sum + (deal.value_c || deal.value || 0), 0)
 
-  const wonDeals = deals.filter(deal => deal.stage === "won")
-  const wonValue = wonDeals.reduce((sum, deal) => sum + deal.value, 0)
+const wonDeals = deals.filter(deal => {
+    const stage = (deal.stage_c || deal.stage || "").toString().toLowerCase()
+    return stage === "won"
+  })
+  const wonValue = wonDeals.reduce((sum, deal) => sum + (deal.value_c || deal.value || 0), 0)
 
-  const activeDeals = deals.filter(deal => !["won", "lost"].includes(deal.stage))
+  const activeDeals = deals.filter(deal => {
+    const stage = (deal.stage_c || deal.stage || "").toString().toLowerCase()
+    return !["won", "lost"].includes(stage)
+  })
 
-  const stageDistribution = stages.map(stage => {
-    const stageDeals = deals.filter(deal => deal.stage === stage.Id)
-    const stageValue = stageDeals.reduce((sum, deal) => sum + deal.value, 0)
+const stageDistribution = stages.map(stage => {
+    const stageDeals = deals.filter(deal => {
+      const dealStage = (deal.stage_c || deal.stage || "").toString()
+      return dealStage === stage.Id.toString()
+    })
+    const stageValue = stageDeals.reduce((sum, deal) => sum + (deal.value_c || deal.value || 0), 0)
     return {
       ...stage,
+      name: stage.name_c || stage.Name,
+      color: stage.color_c,
       count: stageDeals.length,
       value: stageValue
     }
@@ -170,15 +184,15 @@ const Dashboard = () => {
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
           {stageDistribution.map(stage => (
-            <div key={stage.Id} className="text-center">
+<div key={stage.Id} className="text-center">
               <div 
                 className="w-full h-2 rounded-full mb-3"
-                style={{ backgroundColor: stage.color + "20" }}
+                style={{ backgroundColor: (stage.color_c || stage.color || "#ccc") + "20" }}
               >
                 <div 
                   className="h-full rounded-full transition-all duration-500"
                   style={{ 
-                    backgroundColor: stage.color,
+                    backgroundColor: stage.color_c || stage.color || "#ccc",
                     width: `${Math.max((stage.count / Math.max(...stageDistribution.map(s => s.count))) * 100, 10)}%`
                   }}
                 />
@@ -188,7 +202,7 @@ const Dashboard = () => {
                   {stage.count}
                 </div>
                 <div className="text-xs font-medium text-gray-600 uppercase tracking-wide">
-                  {stage.name}
+                  {stage.name_c || stage.Name}
                 </div>
                 <div className="text-sm font-semibold text-gray-700">
                   {formatCurrency(stage.value)}

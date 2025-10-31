@@ -13,12 +13,12 @@ const ContactForm = ({
   className 
 }) => {
   const [formData, setFormData] = useState({
-    name: contact?.name || "",
-    company: contact?.company || "",
-    email: contact?.email || "",
-    phone: contact?.phone || "",
-    notes: contact?.notes || "",
-    tags: contact?.tags?.join(", ") || ""
+name: contact?.name_c || contact?.Name || "",
+    company: contact?.company_c || "",
+    email: contact?.email_c || "",
+    phone: contact?.phone_c || "",
+    notes: contact?.notes_c || "",
+    tags: contact?.tags_c || ""
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState({})
@@ -67,11 +67,12 @@ const ContactForm = ({
     
     try {
       const submitData = {
-        ...formData,
-        tags: formData.tags
-          .split(",")
-          .map(tag => tag.trim())
-          .filter(tag => tag.length > 0)
+name_c: formData.name,
+        company_c: formData.company,
+        email_c: formData.email,
+        phone_c: formData.phone,
+        notes_c: formData.notes,
+        tags_c: formData.tags
       }
       
       await onSave?.(submitData)

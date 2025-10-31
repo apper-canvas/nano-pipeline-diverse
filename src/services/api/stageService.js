@@ -1,21 +1,65 @@
-import mockStages from "@/services/mockData/stages.json"
-
-let stages = [...mockStages]
-
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms))
+import { getApperClient } from "@/services/apperClient";
+import { toast } from "react-toastify";
+import React from "react";
+import Error from "@/components/ui/Error";
 
 export const stageService = {
   async getAll() {
-    await delay(200)
-    return [...stages].sort((a, b) => a.order - b.order)
+    try {
+      const apperClient = getApperClient()
+      if (!apperClient) {
+        throw new Error("ApperClient not initialized")
+      }
+
+      const response = await apperClient.fetchRecords('stage_c', {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "color_c"}},
+          {"field": {"Name": "order_c"}}
+        ],
+        orderBy: [{"fieldName": "order_c", "sorttype": "ASC"}]
+      })
+
+      if (!response.success) {
+        console.error(response.message)
+        toast.error(response.message)
+        return []
+      }
+
+      return response.data || []
+    } catch (error) {
+      console.error("Error fetching stages:", error?.message || error)
+      return []
+    }
   },
 
   async getById(id) {
-    await delay(150)
-    const stage = stages.find(s => s.Id === id)
-    if (!stage) {
-      throw new Error("Stage not found")
+    try {
+      const apperClient = getApperClient()
+      if (!apperClient) {
+        throw new Error("ApperClient not initialized")
+      }
+
+      const response = await apperClient.getRecordById('stage_c', parseInt(id), {
+        fields: [
+          {"field": {"Name": "Name"}},
+          {"field": {"Name": "name_c"}},
+          {"field": {"Name": "color_c"}},
+          {"field": {"Name": "order_c"}}
+        ]
+      })
+
+      if (!response.success) {
+        console.error(response.message)
+        toast.error(response.message)
+        return null
+      }
+
+      return response.data
+} catch (error) {
+      console.error(`Error fetching stage ${id}:`, error?.message || error)
+      return null
     }
-    return { ...stage }
   }
 }

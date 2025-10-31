@@ -1,17 +1,20 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import PipelineBoard from "@/components/organisms/PipelineBoard"
-import MetricCard from "@/components/molecules/MetricCard"
-import Loading from "@/components/ui/Loading"
-import Error from "@/components/ui/Error"
-import Empty from "@/components/ui/Empty"
-import Button from "@/components/atoms/Button"
-import ApperIcon from "@/components/ApperIcon"
-import { dealService } from "@/services/api/dealService"
-import { contactService } from "@/services/api/contactService"
-import { stageService } from "@/services/api/stageService"
-import { formatCurrency } from "@/utils/formatters"
-import { toast } from "react-toastify"
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { dealService } from "@/services/api/dealService";
+import { contactService } from "@/services/api/contactService";
+import { stageService } from "@/services/api/stageService";
+import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import Contacts from "@/components/pages/Contacts";
+import Activities from "@/components/pages/Activities";
+import Dashboard from "@/components/pages/Dashboard";
+import PipelineBoard from "@/components/organisms/PipelineBoard";
+import Loading from "@/components/ui/Loading";
+import Empty from "@/components/ui/Empty";
+import Error from "@/components/ui/Error";
+import MetricCard from "@/components/molecules/MetricCard";
+import { formatCurrency } from "@/utils/formatters";
 
 const Pipeline = () => {
   const navigate = useNavigate()
@@ -20,6 +23,23 @@ const Pipeline = () => {
   const [stages, setStages] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState("")
+
+  // Helper function to get deals by stage
+  const getDealsByStage = (stageId) => {
+    return deals.filter(deal => (deal.stage_c || deal.stage) === stageId)
+  }
+
+  // Helper function to get stage value
+  const getStageValue = (stageId) => {
+    return getDealsByStage(stageId).reduce((sum, deal) => sum + (deal.value_c || deal.value || 0), 0)
+  }
+
+  // Helper function to get contact for a deal
+  const getContactForDeal = (dealId) => {
+    const deal = deals.find(d => d.Id === dealId)
+    const contactId = deal?.contact_id_c?.Id || deal?.contact_id_c || deal?.contactId
+    return contacts.find(c => c.Id === contactId)
+  }
 
   const loadPipelineData = async () => {
     try {
@@ -85,12 +105,21 @@ const Pipeline = () => {
   }
 
   // Calculate pipeline metrics
-  const totalPipelineValue = deals
-    .filter(deal => !["won", "lost"].includes(deal.stage))
-    .reduce((sum, deal) => sum + deal.value, 0)
+const totalPipelineValue = deals
+    .filter(deal => {
+      const stage = (deal.stage_c || deal.stage || "").toString().toLowerCase()
+      return !["won", "lost"].includes(stage)
+    })
+    .reduce((sum, deal) => sum + (deal.value_c || deal.value || 0), 0)
 
-  const activeDeals = deals.filter(deal => !["won", "lost"].includes(deal.stage))
-  const wonDeals = deals.filter(deal => deal.stage === "won")
+  const activeDeals = deals.filter(deal => {
+    const stage = (deal.stage_c || deal.stage || "").toString().toLowerCase()
+    return !["won", "lost"].includes(stage)
+  })
+  const wonDeals = deals.filter(deal => {
+    const stage = (deal.stage_c || deal.stage || "").toString().toLowerCase()
+    return stage === "won"
+  })
   const avgDealSize = activeDeals.length > 0 ? totalPipelineValue / activeDeals.length : 0
 
   if (deals.length === 0) {

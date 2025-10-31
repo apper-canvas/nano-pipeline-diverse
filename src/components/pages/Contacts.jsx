@@ -1,18 +1,18 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import ContactTable from "@/components/organisms/ContactTable"
-import ContactModal from "@/components/organisms/ContactModal"
-import SearchBar from "@/components/molecules/SearchBar"
-import FilterBar from "@/components/molecules/FilterBar"
-import Loading from "@/components/ui/Loading"
-import Error from "@/components/ui/Error"
-import Empty from "@/components/ui/Empty"
-import Button from "@/components/atoms/Button"
-import ApperIcon from "@/components/ApperIcon"
-import { contactService } from "@/services/api/contactService"
-import { dealService } from "@/services/api/dealService"
-import { activityService } from "@/services/api/activityService"
-import { toast } from "react-toastify"
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { contactService } from "@/services/api/contactService";
+import { dealService } from "@/services/api/dealService";
+import { activityService } from "@/services/api/activityService";
+import { toast } from "react-toastify";
+import ApperIcon from "@/components/ApperIcon";
+import Button from "@/components/atoms/Button";
+import ContactTable from "@/components/organisms/ContactTable";
+import ContactModal from "@/components/organisms/ContactModal";
+import Loading from "@/components/ui/Loading";
+import Empty from "@/components/ui/Empty";
+import Error from "@/components/ui/Error";
+import FilterBar from "@/components/molecules/FilterBar";
+import SearchBar from "@/components/molecules/SearchBar";
 
 const Contacts = () => {
   const navigate = useNavigate()
@@ -60,24 +60,25 @@ const Contacts = () => {
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(contact =>
-        contact.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.company.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        contact.tags?.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
+(contact.name_c || contact.Name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (contact.company_c || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (contact.email_c || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+        (contact.tags_c || "").toLowerCase().includes(searchTerm.toLowerCase())
       )
     }
 
     // Additional filters
     if (activeFilters.company) {
-      filtered = filtered.filter(contact =>
-        contact.company.toLowerCase().includes(activeFilters.company.toLowerCase())
+filtered = filtered.filter(contact =>
+        (contact.company_c || "").toLowerCase().includes(activeFilters.company.toLowerCase())
       )
     }
 
-    if (activeFilters.tags && activeFilters.tags.length > 0) {
-      filtered = filtered.filter(contact =>
-        contact.tags?.some(tag => activeFilters.tags.includes(tag))
-      )
+if (activeFilters.tags && activeFilters.tags.length > 0) {
+      filtered = filtered.filter(contact => {
+        const contactTags = contact.tags_c ? contact.tags_c.split(',').map(t => t.trim()) : []
+        return activeFilters.tags.some(tag => contactTags.includes(tag))
+      })
     }
 
     setFilteredContacts(filtered)

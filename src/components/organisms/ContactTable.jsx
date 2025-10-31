@@ -1,11 +1,11 @@
-import { useState } from "react"
-import { cn } from "@/utils/cn"
-import Avatar from "@/components/atoms/Avatar"
-import Badge from "@/components/atoms/Badge"
-import Button from "@/components/atoms/Button"
-import ApperIcon from "@/components/ApperIcon"
-import { formatPhone, formatRelativeTime } from "@/utils/formatters"
-import { useNavigate } from "react-router-dom"
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Avatar from "@/components/atoms/Avatar";
+import { formatPhone, formatRelativeTime } from "@/utils/formatters";
+import { cn } from "@/utils/cn";
 
 const ContactTable = ({ 
   contacts, 
@@ -31,9 +31,9 @@ const ContactTable = ({
     let aValue = a[sortField] || ""
     let bValue = b[sortField] || ""
 
-    if (sortField === "updatedAt") {
-      aValue = new Date(aValue)
-      bValue = new Date(bValue)
+if (sortField === "updatedAt" || sortField === "ModifiedOn") {
+      aValue = new Date(aValue || 0)
+      bValue = new Date(bValue || 0)
     }
 
     if (typeof aValue === "string") {
@@ -108,49 +108,56 @@ const ContactTable = ({
               >
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex items-center">
-                    <Avatar name={contact.name} size="default" />
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {contact.name}
-                      </div>
+<Avatar name={contact.name_c || contact.Name} size="default" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                      <div className="font-medium text-gray-900 truncate">
+                        {contact.name_c || contact.Name}
                     </div>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="text-sm text-gray-900">{contact.company}</div>
+<div className="text-sm text-gray-900">{contact.company_c || ""}</div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap">
                   <div className="space-y-1">
-                    {contact.email && (
+{contact.email_c && (
                       <div className="flex items-center text-sm text-gray-600">
                         <ApperIcon name="Mail" size={14} className="mr-2" />
-                        <span className="truncate max-w-[200px]">{contact.email}</span>
+                        <span className="truncate max-w-[200px]">{contact.email_c}</span>
                       </div>
                     )}
-                    {contact.phone && (
+                    {contact.phone_c && (
                       <div className="flex items-center text-sm text-gray-600">
                         <ApperIcon name="Phone" size={14} className="mr-2" />
-                        <span>{formatPhone(contact.phone)}</span>
+                        <span>{formatPhone(contact.phone_c)}</span>
                       </div>
                     )}
                   </div>
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap">
+<td className="px-6 py-4 whitespace-nowrap">
                   <div className="flex flex-wrap gap-1">
-                    {contact.tags?.slice(0, 2).map((tag, index) => (
-                      <Badge key={index} variant="default" className="text-xs">
-                        {tag}
-                      </Badge>
-                    ))}
-                    {contact.tags?.length > 2 && (
-                      <Badge variant="default" className="text-xs">
-                        +{contact.tags.length - 2}
-                      </Badge>
-                    )}
+                    {(() => {
+                      const tags = contact.tags_c ? contact.tags_c.split(',').map(t => t.trim()) : []
+                      return (
+                        <>
+                          {tags.slice(0, 2).map((tag, index) => (
+                            <Badge key={index} variant="default" className="text-xs">
+                              {tag}
+                            </Badge>
+                          ))}
+                          {tags.length > 2 && (
+                            <Badge variant="default" className="text-xs">
+                              +{tags.length - 2}
+                            </Badge>
+                          )}
+                        </>
+                      )
+                    })()}
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {formatRelativeTime(contact.updatedAt)}
+{formatRelativeTime(contact.ModifiedOn || contact.CreatedOn)}
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <div 

@@ -40,7 +40,7 @@ const ActivityFormPage = () => {
   ]
 
   const loadActivity = async () => {
-    if (!id) return
+if (!id) return
     
     try {
       setLoading(true)
@@ -49,12 +49,13 @@ const ActivityFormPage = () => {
       setActivity(activityData)
       
       // Parse the activity data for the form
-      const activityDate = new Date(activityData.date)
+      const activityDate = new Date(activityData.timestamp_c || activityData.CreatedOn)
+      const contactId = activityData.contact_id_c?.Id || activityData.contact_id_c
       setFormData({
-        contactId: activityData.contactId,
-        type: activityData.type,
-        subject: activityData.subject,
-        notes: activityData.notes || "",
+        contactId: contactId?.toString() || "",
+        type: activityData.type_c || "call",
+        subject: activityData.description_c || "",
+        notes: activityData.notes_c || "",
         date: activityDate.toISOString().split('T')[0],
         time: activityDate.toTimeString().slice(0, 5)
       })
@@ -111,7 +112,7 @@ const ActivityFormPage = () => {
     return true
   }
 
-  const handleSave = async () => {
+const handleSave = async () => {
     if (!validateForm()) return
 
     try {
@@ -121,11 +122,10 @@ const ActivityFormPage = () => {
       const activityDateTime = new Date(`${formData.date}T${formData.time}`)
       
       const activityData = {
-        contactId: formData.contactId,
-        type: formData.type,
-        subject: formData.subject.trim(),
-        notes: formData.notes?.trim() || "",
-        date: activityDateTime.toISOString()
+        contact_id_c: parseInt(formData.contactId),
+        type_c: formData.type,
+        description_c: formData.subject.trim(),
+        timestamp_c: activityDateTime.toISOString()
       }
 
       if (isEditing) {
@@ -179,7 +179,7 @@ const ActivityFormPage = () => {
     )
   }
 
-  const selectedContact = contacts.find(c => c.id === formData.contactId)
+const selectedContact = contacts.find(c => c.Id?.toString() === formData.contactId)
 
   return (
     <div className="space-y-6">
@@ -222,9 +222,9 @@ const ActivityFormPage = () => {
               ) : (
 <>
                   <option value="">Select a contact</option>
-                  {contacts.map(contact => (
-                    <option key={contact.id || `contact-${contact.name}-${Math.random()}`} value={contact.id}>
-                      {contact.name} - {contact.company || "No company"}
+{contacts.map(contact => (
+                    <option key={contact.Id} value={contact.Id}>
+                      {contact.name_c || contact.Name} - {contact.company_c || "No company"}
                     </option>
                   ))}
                 </>
@@ -232,11 +232,11 @@ const ActivityFormPage = () => {
             </Select>
             {selectedContact && (
               <div className="text-sm text-gray-500 mt-1">
-                {selectedContact.email && (
-                  <span className="mr-4">{selectedContact.email}</span>
+{selectedContact.email_c && (
+                  <span className="mr-4">{selectedContact.email_c}</span>
                 )}
-                {selectedContact.phone && (
-                  <span>{selectedContact.phone}</span>
+                {selectedContact.phone_c && (
+                  <span>{selectedContact.phone_c}</span>
                 )}
               </div>
             )}

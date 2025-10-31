@@ -9,9 +9,10 @@ const ActivityFeed = ({
   variant = "default",
   className 
 }) => {
-  const getContactForActivity = (activityId) => {
+const getContactForActivity = (activityId) => {
     const activity = activities.find(a => a.Id === activityId)
-    return contacts.find(c => c.Id === activity?.contactId)
+    const contactId = activity?.contact_id_c?.Id || activity?.contact_id_c || activity?.contactId
+    return contacts.find(c => c.Id === contactId)
   }
 
   if (activities.length === 0) {

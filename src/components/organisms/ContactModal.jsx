@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
-import { cn } from "@/utils/cn";
 import { AnimatePresence, motion } from "framer-motion";
-import Avatar from "@/components/atoms/Avatar";
-import Button from "@/components/atoms/Button";
-import Badge from "@/components/atoms/Badge";
-import ApperIcon from "@/components/ApperIcon";
-import ContactForm from "@/components/organisms/ContactForm";
-import ActivityFeed from "@/components/organisms/ActivityFeed";
-import { formatDate, formatPhone, formatCurrency } from "@/utils/formatters";
 import { useNavigate } from "react-router-dom";
+import ApperIcon from "@/components/ApperIcon";
+import Badge from "@/components/atoms/Badge";
+import Button from "@/components/atoms/Button";
+import Avatar from "@/components/atoms/Avatar";
+import ActivityFeed from "@/components/organisms/ActivityFeed";
+import ContactForm from "@/components/organisms/ContactForm";
+import { formatCurrency, formatDate, formatPhone } from "@/utils/formatters";
+import { cn } from "@/utils/cn";
 const ContactModal = ({ 
   contact, 
   deals,
@@ -30,8 +30,14 @@ const ContactModal = ({
 
   if (!contact) return null
 
-  const contactDeals = deals.filter(deal => deal.contactId === contact.Id)
-  const contactActivities = activities.filter(activity => activity.contactId === contact.Id)
+const contactDeals = deals.filter(deal => {
+    const dealContactId = deal.contact_id_c?.Id || deal.contact_id_c || deal.contactId
+    return dealContactId === contact.Id
+  })
+  const contactActivities = activities.filter(activity => {
+    const activityContactId = activity.contact_id_c?.Id || activity.contact_id_c || activity.contactId
+    return activityContactId === contact.Id
+  })
 
   const tabs = [
     { id: "info", label: "Info", icon: "User" },
@@ -141,64 +147,68 @@ const ContactModal = ({
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Name
                               </label>
-                              <p className="text-gray-900">{contact.name}</p>
+<p className="text-gray-900">{contact.name_c || contact.Name}</p>
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Company
                               </label>
-                              <p className="text-gray-900">{contact.company}</p>
+                              <p className="text-gray-900">{contact.company_c || ""}</p>
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Email
                               </label>
-                              <p className="text-gray-900">{contact.email}</p>
+                              <p className="text-gray-900">{contact.email_c || ""}</p>
                             </div>
                             <div>
                               <label className="block text-sm font-medium text-gray-700 mb-1">
                                 Phone
                               </label>
-                              <p className="text-gray-900">{formatPhone(contact.phone)}</p>
+                              <p className="text-gray-900">{formatPhone(contact.phone_c || "")}</p>
                             </div>
                           </div>
-                          <div className="space-y-4">
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Tags
-                              </label>
-                              <div className="flex flex-wrap gap-2">
-                                {contact.tags?.map((tag, index) => (
+
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                              Tags
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                              {(() => {
+                                const tags = contact.tags_c ? contact.tags_c.split(',').map(t => t.trim()) : []
+                                return tags.map((tag, index) => (
                                   <Badge key={index} variant="default">
                                     {tag}
                                   </Badge>
-                                ))}
-                              </div>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Created
-                              </label>
-                              <p className="text-gray-900">{formatDate(contact.createdAt)}</p>
-                            </div>
-                            <div>
-                              <label className="block text-sm font-medium text-gray-700 mb-1">
-                                Last Updated
-                              </label>
-                              <p className="text-gray-900">{formatDate(contact.updatedAt)}</p>
+                                ))
+                              })()}
                             </div>
                           </div>
-                        </div>
-                        {contact.notes && (
+
                           <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Created
+                            </label>
+                            <div className="flex items-center space-x-2 text-gray-900">
+                              <p className="text-gray-900">{formatDate(contact.CreatedOn)}</p>
+                            </div>
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                              Last Updated
+                            </label>
+                            <p className="text-gray-900">{formatDate(contact.ModifiedOn)}</p>
+                          </div>
+
+<div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
                               Notes
                             </label>
                             <div className="bg-gray-50 rounded-lg p-4">
-                              <p className="text-gray-900 whitespace-pre-wrap">{contact.notes}</p>
+                              <p className="text-gray-900 whitespace-pre-wrap">{contact.notes_c || ""}</p>
                             </div>
                           </div>
-                        )}
+                        </div>
                       </div>
                     )}
                   </>
@@ -207,21 +217,21 @@ const ContactModal = ({
                 {activeTab === "deals" && (
                   <div className="space-y-4">
                     {contactDeals.length > 0 ? (
-                      contactDeals.map((deal) => (
+contactDeals.map((deal) => (
                         <div key={deal.Id} className="card p-4 cursor-pointer hover:shadow-md">
                           <div className="flex items-center justify-between">
                             <div>
-                              <h4 className="font-semibold text-gray-900">{deal.title}</h4>
+                              <h4 className="font-semibold text-gray-900">{deal.title_c || deal.title}</h4>
                               <p className="text-sm text-gray-600">
-                                {formatDate(deal.closeDate)} • {deal.probability}% probability
+                                {formatDate(deal.close_date_c || deal.closeDate)} • {deal.probability_c || deal.probability} probability
                               </p>
                             </div>
                             <div className="text-right">
                               <p className="font-bold text-gray-900">
-                                {formatCurrency(deal.value)}
+                                {formatCurrency(deal.value_c || deal.value)}
                               </p>
-                              <Badge variant={deal.stage.toLowerCase()}>
-                                {deal.stage}
+                              <Badge variant={(deal.stage_c || deal.stage || "").toString().toLowerCase()}>
+                                {deal.stage_c || deal.stage}
                               </Badge>
                             </div>
                           </div>

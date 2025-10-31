@@ -22,13 +22,13 @@ const DealForm = () => {
 
   // Form state
   const [formData, setFormData] = useState({
-    title: '',
+title: '',
     value: '',
     stage: '',
     contactId: preselectedContactId || '',
     description: '',
     closeDate: '',
-    probability: '50'
+    probability: '0-5'
   })
 
   // Data state
@@ -62,8 +62,8 @@ const DealForm = () => {
       
       // Set default stage if not editing
       if (!isEditing && stagesData.length > 0) {
-        const defaultStage = stagesData.find(s => s.name.toLowerCase().includes('lead')) || stagesData[0]
-        setFormData(prev => ({ ...prev, stage: defaultStage.Id.toString() }))
+const defaultStage = stagesData.find(s => (s.name_c || s.Name || "").toLowerCase().includes('lead')) || stagesData[0]
+        setFormData(prev => ({ ...prev, stage: defaultStage?.Id?.toString() || '' }))
       }
     } catch (err) {
       setError('Failed to load form data')
@@ -74,16 +74,17 @@ const DealForm = () => {
 
   const loadDealData = async (dealId) => {
     try {
-      const deal = await dealService.getById(dealId)
+const deal = await dealService.getById(dealId)
       if (deal) {
+        const contactId = deal.contact_id_c?.Id || deal.contact_id_c || deal.contactId
         setFormData({
-          title: deal.title || '',
-          value: deal.value?.toString() || '',
-          stage: deal.stage?.toString() || '',
-          contactId: deal.contactId?.toString() || '',
-          description: deal.description || '',
-          closeDate: deal.closeDate || '',
-          probability: deal.probability?.toString() || '50'
+          title: deal.title_c || deal.title || '',
+          value: deal.value_c?.toString() || deal.value?.toString() || '',
+          stage: deal.stage_c?.toString() || deal.stage?.toString() || '',
+          contactId: contactId?.toString() || '',
+          description: deal.notes_c || deal.description || '',
+          closeDate: deal.close_date_c || deal.closeDate || '',
+          probability: deal.probability_c?.toString() || deal.probability?.toString() || '0-5'
         })
       }
     } catch (err) {
@@ -121,13 +122,13 @@ const DealForm = () => {
     setSaving(true)
     try {
       const dealData = {
-        title: formData.title.trim(),
-        value: formData.value ? parseFloat(formData.value) : 0,
-        stage: parseInt(formData.stage),
-        contactId: parseInt(formData.contactId),
-        description: formData.description.trim(),
-        closeDate: formData.closeDate || null,
-        probability: parseInt(formData.probability) || 50
+title_c: formData.title.trim(),
+        value_c: formData.value ? parseFloat(formData.value) : 0,
+        stage_c: formData.stage,
+        contact_id_c: parseInt(formData.contactId),
+        notes_c: formData.description.trim(),
+        close_date_c: formData.closeDate || null,
+        probability_c: formData.probability || '0-5'
       }
 
       if (isEditing) {
@@ -200,8 +201,8 @@ const DealForm = () => {
               >
                 <option value="">Select a contact</option>
                 {contacts.map((contact) => (
-                  <option key={contact.Id} value={contact.Id}>
-                    {contact.firstName} {contact.lastName} - {contact.company}
+<option key={contact.Id} value={contact.Id}>
+                    {contact.name_c || contact.Name} - {contact.company_c || ""}
                   </option>
                 ))}
               </Select>
@@ -217,9 +218,9 @@ const DealForm = () => {
                 required
               >
                 <option value="">Select a stage</option>
-                {stages.map((stage) => (
+{stages.map((stage) => (
                   <option key={stage.Id} value={stage.Id}>
-                    {stage.name}
+                    {stage.name_c || stage.Name}
                   </option>
                 ))}
               </Select>

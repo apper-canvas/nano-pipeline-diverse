@@ -79,7 +79,7 @@ const PipelineBoard = ({
   return (
     <div className={cn("flex gap-6 overflow-x-auto pb-4", className)}>
       {stages.map((stage) => {
-        const stageDeals = getDealsByStage(stage.Id)
+const stageDeals = getDealsByStage(stage.Id.toString())
         const stageValue = getStageValue(stage.Id)
         const isDropTarget = dragOverStage === stage.Id
 
@@ -97,9 +97,9 @@ const PipelineBoard = ({
                 <div className="flex items-center space-x-2">
                   <div 
                     className="w-3 h-3 rounded-full"
-                    style={{ backgroundColor: stage.color }}
-                  ></div>
-                  <h3 className="font-semibold text-gray-900">{stage.name}</h3>
+style={{ backgroundColor: stage.color_c || stage.color }}
+                  />
+                  <h3 className="font-semibold text-gray-900">{stage.name_c || stage.Name}</h3>
                   <Badge variant="default" className="text-xs">
                     {stageDeals.length}
                   </Badge>

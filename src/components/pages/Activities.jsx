@@ -54,28 +54,30 @@ const Activities = () => {
     // Search filter
     if (searchTerm) {
       filtered = filtered.filter(activity => {
-        const contact = contacts.find(c => c.Id === activity.contactId)
+const contactId = activity.contact_id_c?.Id || activity.contact_id_c
+        const contact = contacts.find(c => c.Id === contactId)
         return (
-          activity.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          activity.type.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (contact && contact.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (contact && contact.company.toLowerCase().includes(searchTerm.toLowerCase()))
+          (activity.description_c || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (activity.type_c || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+          (contact && (contact.name_c || contact.Name || "").toLowerCase().includes(searchTerm.toLowerCase())) ||
+          (contact && (contact.company_c || "").toLowerCase().includes(searchTerm.toLowerCase()))
         )
       })
     }
 
     // Type filter
     if (activeFilters.type) {
-      filtered = filtered.filter(activity =>
-        activity.type.toLowerCase() === activeFilters.type.toLowerCase()
+filtered = filtered.filter(activity =>
+        (activity.type_c || "").toLowerCase() === activeFilters.type.toLowerCase()
       )
     }
 
     // Contact filter
-    if (activeFilters.contact) {
+if (activeFilters.contact) {
       filtered = filtered.filter(activity => {
-        const contact = contacts.find(c => c.Id === activity.contactId)
-        return contact && contact.name.toLowerCase().includes(activeFilters.contact.toLowerCase())
+        const contactId = activity.contact_id_c?.Id || activity.contact_id_c
+        const contact = contacts.find(c => c.Id === contactId)
+        return contact && (contact.name_c || contact.Name || "").toLowerCase().includes(activeFilters.contact.toLowerCase())
       })
     }
 
@@ -143,7 +145,7 @@ const Activities = () => {
   const groupActivitiesByDate = (activities) => {
     const groups = {}
     activities.forEach(activity => {
-      const date = new Date(activity.timestamp).toDateString()
+const date = new Date(activity.timestamp_c || activity.CreatedOn).toDateString()
       if (!groups[date]) {
         groups[date] = []
       }
@@ -155,7 +157,13 @@ const Activities = () => {
   const activityGroups = groupActivitiesByDate(filteredActivities)
 
   // Get activity type counts
-  const activityTypeCounts = activities.reduce((counts, activity) => {
+const activityTypeCounts = activities.reduce((counts, activity) => {
+    const type = activity.type_c || 'unknown'
+    counts[type] = (counts[type] || 0) + 1
+    return counts
+  }, {})
+
+  const oldActivityTypeCounts = activities.reduce((counts, activity) => {
     counts[activity.type] = (counts[activity.type] || 0) + 1
     return counts
   }, {})

@@ -41,7 +41,14 @@ const ContactFormPage = () => {
   const handleSave = async (formData) => {
     try {
       if (isEditing) {
-        await contactService.update(contact.Id, formData)
+await contactService.update(contact.Id, {
+          name_c: formData.name,
+          company_c: formData.company,
+          email_c: formData.email,
+          phone_c: formData.phone,
+          notes_c: formData.notes,
+          tags_c: formData.tags
+        })
         toast.success("Contact updated successfully!")
       } else {
         await contactService.create(formData)
