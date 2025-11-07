@@ -49,10 +49,9 @@ if (!id) return
       setActivity(activityData)
       
       // Parse the activity data for the form
-      const activityDate = new Date(activityData.timestamp_c || activityData.CreatedOn)
-      const contactId = activityData.contact_id_c?.Id || activityData.contact_id_c
+const activityDate = new Date(activityData.timestamp_c || activityData.CreatedOn)
       setFormData({
-        contactId: contactId?.toString() || "",
+        contactId: activityData.contact_id_c || "",
         type: activityData.type_c || "call",
         subject: activityData.description_c || "",
         notes: activityData.notes_c || "",
@@ -120,9 +119,8 @@ const handleSave = async () => {
       
       // Combine date and time
       const activityDateTime = new Date(`${formData.date}T${formData.time}`)
-      
-      const activityData = {
-        contact_id_c: parseInt(formData.contactId),
+const activityData = {
+        contact_id_c: formData.contactId.trim(),
         type_c: formData.type,
         description_c: formData.subject.trim(),
         timestamp_c: activityDateTime.toISOString()
@@ -179,7 +177,7 @@ const handleSave = async () => {
     )
   }
 
-const selectedContact = contacts.find(c => c.Id?.toString() === formData.contactId)
+const selectedContact = contacts.find(c => (c.name_c || c.Name) === formData.contactId)
 
   return (
     <div className="space-y-6">
@@ -219,11 +217,11 @@ const selectedContact = contacts.find(c => c.Id?.toString() === formData.contact
             >
               {contactsLoading ? (
                 <option value="">Loading contacts...</option>
-              ) : (
-<>
+) : (
+                <>
                   <option value="">Select a contact</option>
-{contacts.map(contact => (
-                    <option key={contact.Id} value={contact.Id}>
+                  {contacts.map(contact => (
+                    <option key={contact.Id} value={contact.name_c || contact.Name}>
                       {contact.name_c || contact.Name} - {contact.company_c || "No company"}
                     </option>
                   ))}

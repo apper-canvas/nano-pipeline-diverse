@@ -52,15 +52,12 @@ const Activities = () => {
     let filtered = [...activities]
 
     // Search filter
-    if (searchTerm) {
+if (searchTerm) {
       filtered = filtered.filter(activity => {
-const contactId = activity.contact_id_c?.Id || activity.contact_id_c
-        const contact = contacts.find(c => c.Id === contactId)
         return (
           (activity.description_c || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
           (activity.type_c || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-          (contact && (contact.name_c || contact.Name || "").toLowerCase().includes(searchTerm.toLowerCase())) ||
-          (contact && (contact.company_c || "").toLowerCase().includes(searchTerm.toLowerCase()))
+          (activity.contact_id_c || "").toLowerCase().includes(searchTerm.toLowerCase())
         )
       })
     }
@@ -72,15 +69,12 @@ filtered = filtered.filter(activity =>
       )
     }
 
-    // Contact filter
-if (activeFilters.contact) {
+// Contact filter
+    if (activeFilters.contact) {
       filtered = filtered.filter(activity => {
-        const contactId = activity.contact_id_c?.Id || activity.contact_id_c
-        const contact = contacts.find(c => c.Id === contactId)
-        return contact && (contact.name_c || contact.Name || "").toLowerCase().includes(activeFilters.contact.toLowerCase())
+        return (activity.contact_id_c || "").toLowerCase().includes(activeFilters.contact.toLowerCase())
       })
     }
-
     setFilteredActivities(filtered)
   }, [activities, contacts, searchTerm, activeFilters])
 

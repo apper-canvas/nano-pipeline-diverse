@@ -37,9 +37,9 @@ const ActivityItem = ({
 
   if (variant === "compact") {
     return (
-      <div className={cn("flex items-center space-x-3 py-2", className)}>
-        <div className={cn("p-1.5 rounded-full bg-gray-100", getActivityColor(activity.type))}>
-          <ApperIcon name={getActivityIcon(activity.type)} size={14} />
+<div className={cn("flex items-center space-x-3 py-2", className)}>
+        <div className={cn("p-1.5 rounded-full bg-gray-100", getActivityColor(activity.type_c || activity.type || ""))}>
+          <ApperIcon name={getActivityIcon(activity.type_c || activity.type || "")} size={14} />
         </div>
         <div className="flex-1 min-w-0">
 <p className="text-sm text-gray-900 truncate">{activity.description_c || ""}</p>
@@ -54,12 +54,12 @@ const ActivityItem = ({
 
   return (
     <div className={cn("flex space-x-4 py-4", className)}>
-      <div className="flex flex-col items-center">
-        <div className={cn("p-2 rounded-full bg-white shadow-sm border-2", getActivityColor(activity.type).replace('text-', 'border-'))}>
-          <ApperIcon 
-            name={getActivityIcon(activity.type)} 
+<div className="flex flex-col items-center">
+        <div className={cn("p-2 rounded-full bg-white shadow-sm border-2", getActivityColor(activity.type_c || activity.type || "").replace('text-', 'border-'))}>
+          <ApperIcon
+name={getActivityIcon(activity.type_c || activity.type || "")} 
             size={16} 
-            className={getActivityColor(activity.type)}
+            className={getActivityColor(activity.type_c || activity.type || "")}
           />
         </div>
         <div className="w-0.5 bg-gray-200 flex-1 mt-2"></div>

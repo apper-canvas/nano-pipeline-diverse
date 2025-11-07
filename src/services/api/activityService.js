@@ -14,9 +14,9 @@ export const activityService = {
           {"field": {"Name": "Name"}},
           {"field": {"Name": "type_c"}},
           {"field": {"Name": "description_c"}},
-          {"field": {"Name": "timestamp_c"}},
+{"field": {"Name": "timestamp_c"}},
           {"field": {"Name": "deal_id_c"}},
-          {"field": {"Name": "contact_id_c"}, "referenceField": {"field": {"Name": "Name"}}},
+          {"field": {"Name": "contact_id_c"}},
           {"field": {"Name": "CreatedOn"}},
           {"field": {"Name": "ModifiedOn"}}
         ],
@@ -48,9 +48,9 @@ export const activityService = {
           {"field": {"Name": "Name"}},
           {"field": {"Name": "type_c"}},
           {"field": {"Name": "description_c"}},
-          {"field": {"Name": "timestamp_c"}},
+{"field": {"Name": "timestamp_c"}},
           {"field": {"Name": "deal_id_c"}},
-          {"field": {"Name": "contact_id_c"}, "referenceField": {"field": {"Name": "Name"}}},
+          {"field": {"Name": "contact_id_c"}},
           {"field": {"Name": "CreatedOn"}},
           {"field": {"Name": "ModifiedOn"}}
         ]
@@ -81,9 +81,9 @@ export const activityService = {
           {
             Name: activityData.description_c || activityData.subject || "",
             type_c: activityData.type_c || activityData.type || "call",
-            description_c: activityData.description_c || activityData.subject || "",
+description_c: activityData.description_c || activityData.subject || "",
             timestamp_c: activityData.timestamp_c || activityData.date || new Date().toISOString(),
-            contact_id_c: activityData.contact_id_c ? parseInt(activityData.contact_id_c) : (activityData.contactId ? parseInt(activityData.contactId) : null),
+            contact_id_c: activityData.contact_id_c || activityData.contactId || "",
             deal_id_c: activityData.deal_id_c || activityData.dealId || null
           }
         ]
@@ -130,9 +130,9 @@ export const activityService = {
             Id: parseInt(id),
             Name: activityData.description_c || activityData.subject || "",
             type_c: activityData.type_c || activityData.type || "call",
-            description_c: activityData.description_c || activityData.subject || "",
+description_c: activityData.description_c || activityData.subject || "",
             timestamp_c: activityData.timestamp_c || activityData.date || new Date().toISOString(),
-            contact_id_c: activityData.contact_id_c ? parseInt(activityData.contact_id_c) : (activityData.contactId ? parseInt(activityData.contactId) : null),
+            contact_id_c: activityData.contact_id_c || activityData.contactId || "",
             deal_id_c: activityData.deal_id_c || activityData.dealId || null
           }
         ]

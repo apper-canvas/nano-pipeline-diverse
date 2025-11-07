@@ -11,8 +11,8 @@ const ActivityFeed = ({
 }) => {
 const getContactForActivity = (activityId) => {
     const activity = activities.find(a => a.Id === activityId)
-    const contactId = activity?.contact_id_c?.Id || activity?.contact_id_c || activity?.contactId
-    return contacts.find(c => c.Id === contactId)
+    const contactName = activity?.contact_id_c || activity?.contactId || ""
+    return contacts.find(c => (c.name_c || c.Name) === contactName)
   }
 
   if (activities.length === 0) {
